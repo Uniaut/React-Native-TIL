@@ -9,6 +9,8 @@ import {
   TouchableOpacity
 } from 'react-native';
 
+import Setting from './Setting.js';
+
 
 const styles = StyleSheet.create({
   container: {
