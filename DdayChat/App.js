@@ -7,7 +7,8 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity
+  TouchableOpacity,
+  TouchableHighlightBase
 } from 'react-native';
 
 import Setting from './Setting.js';
@@ -20,15 +21,40 @@ export default class App extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      date: new Date(2027, 0, 3),
-      title: '박사 취득',
-      log: '졸업?\n그 논문으로?\n졸업?\n그 논문으로?\n졸업?\n그 논문으로?\n',
+      date: new Date(),
+      title: '수능',
+      log: '',
       settingModal: false,
     }
   }
 
   toggleSettingModal() {
     this.setState({settingModal: !this.state.settingModal})
+  }
+
+  settingHandler(changedTitle, changedDate) {
+    this.setState({
+      title: changedTitle,
+      date: changedDate
+    });
+    this.toggleSettingModal();
+  }
+
+  dateText(){
+    return this.state.date.getFullYear() + '년 ' + (this.state.date.getMonth() + 1) + '월 ' + this.state.date.getDate() + '일'
+  }
+
+  dateDeltaText(){
+    const dist = new Date().getTime() - this.state.date.getTime();
+    console.log(new Date(), this.state.dday, dist / (1000 * 60 * 60 * 24) )
+    const delta = Math.floor(dist / (1000 * 60 * 60 * 24))
+    if (delta < 0) {
+      return 'D-'+ Math.abs(delta);
+    } else if (delta > 0) {
+      return 'D+'+ Math.abs(delta);
+    } else {
+      return 'D-DAY'
+    }
   }
 
   render() {
@@ -51,13 +77,13 @@ export default class App extends React.Component {
           </View>
           <View style={styles.ddayView}>
             <Text style={styles.ddayDateText}>
-              {this.state.date.toDateString()}
+              {this.dateText()}
             </Text>
             <Text style={styles.ddayEventText}>
               {this.state.title}까지
             </Text>
             <Text style={styles.ddayDayText}>
-              {}일
+              {this.dateDeltaText()}
             </Text>
           </View>
           <View style={styles.chatView}>
@@ -78,7 +104,14 @@ export default class App extends React.Component {
             </View>
           </View>
           
-          {this.state.settingModal ? <Setting/> : <></>}
+          {this.state.settingModal ? 
+            <Setting
+              title={this.state.title}
+              date={this.state.date}
+              modalHandler={()=>{this.toggleSettingModal()}}
+              settingHandler={(chTitle, chDate)=>{this.settingHandler(chTitle, chDate)}}
+            />
+          : <></>}
         
         </ImageBackground>
       </View>
@@ -132,6 +165,7 @@ const styles = StyleSheet.create({
     paddingVertical:30,
   },
   chatLogView: {
+    flex: 1,
     backgroundColor: 'powderblue',
     borderWidth:1,
     borderColor:'steelblue',

@@ -13,26 +13,34 @@ export default class Setting extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      title: '',
-      date: new Date(),
+      title: props.title,
+      date: props.date,
     };
   }
   render() {
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={styles.background}/>
+        <TouchableOpacity 
+          activeOpacity={1}
+          onPress={()=>{this.props.modalHandler()}}
+          style={styles.background}
+        />
         <View style={styles.modal}>
           <Text style={styles.titleText}>설정</Text>
           <TextInput
+            value={this.state.title}
             onChangeText={(changedText)=>{this.setState({title: changedText})}}
             style={styles.titleInput}
             placeholder={'이벤트 내용을 입력해주세요'}
           />
           <DatePicker
             date={this.state.date}
+            onDateChange={(chDate)=>{this.setState({date: chDate})}}
             mode="date"
           />
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={()=>{this.props.settingHandler(this.state.title, this.state.date)}}
+          >
             <Text style={styles.doneText}>
               변경
             </Text>
