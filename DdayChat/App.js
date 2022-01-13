@@ -8,11 +8,13 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableHighlightBase
+  TouchableHighlightBase,
+  Dimensions
 } from 'react-native';
 
-import Setting from './Setting.js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import Setting from './Setting.js';
 
 
 const settingIconUri = 'https://iconmonstr.com/wp-content/g/gd/makefg.php?i=../assets/preview/2012/png/iconmonstr-gear-2.png';
@@ -23,8 +25,44 @@ export default class App extends React.Component {
     this.state = {
       date: new Date(),
       title: '수능',
-      log: '',
+      text: '',
+      log: [],
       settingModal: false,
+    }
+  }
+
+  async componentDidMount() {
+    try {
+      const savedString = await AsyncStorage.getItem('@saved-data');
+      if (savedString == null) {
+        this.setState(
+          {
+            date: new Date(),
+            title: '수능',
+          }
+        );
+      } else {
+        const saved = JSON.parse(savedString);
+        this.setState(
+          {
+            date: new Date(saved.date),
+            title: saved.title,
+          }
+        );
+      }
+      const chatLogString = await AsyncStorage.getItem('@chat');
+      if (chatLogString == null) {
+        this.setState({
+          log: [],
+        });
+      } else {
+        const chatLog = JSON.parse(chatLogString);
+        this.setState({
+          log: chatLog,
+        });
+      }
+    } catch(e) {
+      console.error(e);
     }
   }
 
@@ -32,12 +70,36 @@ export default class App extends React.Component {
     this.setState({settingModal: !this.state.settingModal})
   }
 
-  settingHandler(changedTitle, changedDate) {
+  async settingHandler(changedTitle, changedDate) {
     this.setState({
       title: changedTitle,
       date: changedDate
     });
+
+    try {
+      const toSave = {
+        date: changedDate,
+        title: changedTitle,
+      };
+      const savedString = JSON.stringify(toSave);
+      await AsyncStorage.setItem('@saved-data', savedString);
+    } catch (e) {
+      console.error(e);
+    }
+
     this.toggleSettingModal();
+  }
+
+  chatAdd () {
+    const sentTime = new Date().toDateString();
+    const log_item = sentTime.toString() + ' : ' + this.state.text;
+    this.setState({
+      log: [...this.state.log, log_item],
+      text: '',
+    }, async () => {
+      const chatLogString = JSON.stringify(this.state.log)
+      await AsyncStorage.setItem('@chat', chatLogString);
+    });
   }
 
   dateText(){
@@ -57,13 +119,17 @@ export default class App extends React.Component {
     }
   }
 
+  logText() {
+    return this.state.log.join('\n');
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <ImageBackground
-          style={{width: '100%', height: '100%'}}
+          style={styles.backgroundImage}
           source={require('./resources/bonobono.jpg')}
-        >
+        />
           <View style={styles.settingView}>
             <TouchableOpacity 
               style={styles.settingIconTouch}
@@ -90,15 +156,23 @@ export default class App extends React.Component {
             <View style={styles.chatLogView}>
               <ScrollView>
                 <Text style={styles.chatLogText}>
-                  {this.state.log}
+                  {this.logText()}
                 </Text>
               </ScrollView>
             </View>
             <View style={styles.chatInputBarView}>
-              <TextInput style={styles.chatInputView}/>
-              <TouchableOpacity style={styles.chatButtonView}>
+              <TextInput 
+                style={styles.chatInputView}
+                placeholder='당신의 생각을 기록하세요!'
+                value={this.state.text}
+                onChangeText={(text)=>{this.setState({text:text})}}
+              />
+              <TouchableOpacity 
+                style={styles.chatButtonView}
+                onPress={()=>{this.chatAdd()}}
+              >
                 <Text>
-                  논문 제출
+                  전송
                 </Text>
               </TouchableOpacity>
             </View>
@@ -112,16 +186,23 @@ export default class App extends React.Component {
               settingHandler={(chTitle, chDate)=>{this.settingHandler(chTitle, chDate)}}
             />
           : <></>}
-        
-        </ImageBackground>
-      </View>
+        </View>
     )
   }
 };
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: 'transparent',
+    position: 'absolute',
+    height:'100%',
+    width:'100%',
     flex:1,
+  },
+  backgroundImage: {
+    position: 'absolute',
+    height: Dimensions.get('window').height,
+    width: Dimensions.get('window').width,
   },
   settingView: {
     height:70,
@@ -129,7 +210,6 @@ const styles = StyleSheet.create({
     alignItems:'flex-end',
   },
   settingIconTouch: {
-    backgroundColor:'gray',
     margin:10,
   },
   settingIcon: {
@@ -158,7 +238,6 @@ const styles = StyleSheet.create({
     fontStyle:'normal',
   },
   chatView: {
-    backgroundColor:'rgba(100, 255, 100, 0.4)',
     flex:6,
     justifyContent:'center',
     alignItems:'center',
@@ -173,7 +252,7 @@ const styles = StyleSheet.create({
     width:'90%',
   },
   chatLogText: {
-    fontSize: 50,
+    fontSize: 15,
   },
   chatInputBarView: {
     flexDirection:'row',
