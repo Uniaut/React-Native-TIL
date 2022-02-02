@@ -4,6 +4,7 @@ import { WebView } from "react-native-webview";
 import { ID as nmapID, Key as nmapKey } from './nmap.config.json';
 import TelLink from "./telephone_linking.js";
 import StorageTutorial from "./storing.js";
+import GeoData from './geo.js'
 
 
 var base64 = require('base-64')
@@ -50,8 +51,14 @@ class NMapImage extends Component {
 
 const App = () => {
   return (
-    <View style={styles.fullarea}>
-      <StorageTutorial />
+    <View style={styles.container}>
+      <View style={styles.storage_area}>
+        <StorageTutorial />
+        <GeoData />
+      </View>
+      <View style={styles.geo_area}>
+        <GeoData />
+      </View>
     </View>
   );
 };
@@ -59,10 +66,19 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 5,
+    padding: 10,
   },
-  fullarea: {
-    flex: 1
+  storage_area: {
+    flex: 0.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'lightgreen',
+  },
+  geo_area: {
+    flex: 0.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'powderblue'
   }
 });
 

@@ -37,7 +37,7 @@ class StorageTutorial extends React.Component {
   }
   render() {
     return (
-      <View>
+      <View style={{flexDirection:'row'}}>
         <BouncyCheckbox
           onPress={() => {
             console.log(!this.state.is_Happy);
@@ -45,15 +45,16 @@ class StorageTutorial extends React.Component {
           }}
           isChecked={this.state.is_Happy}
           disableBuiltInState={true}
+          textComponent={
+            <Text>
+              { this.state.is_Happy ? 
+              "나는 행복합니다~":
+              "나는 불행합니다~"
+              }
+            </Text>
+          }
+          size={15}
         />
-        {this.state.is_Happy ? 
-          <Text>
-            나는 행복합니다~
-          </Text> :
-          <Text>
-            나는 불행합니다~
-          </Text>
-        }
       </View>
     );
   }
