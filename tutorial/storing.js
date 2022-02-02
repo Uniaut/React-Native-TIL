@@ -2,43 +2,61 @@ import React from 'react';
 import { Component, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Text, TextInput, View } from "react-native";
+import BouncyCheckbox from 'react-native-bouncy-checkbox';
 
-
-const storeData = (value) => {
-	try {
-		AsyncStorage.setItem('@storage_Key', value)
-	} catch (e) {
-		console.error(e)
-	}
-}
-
-const getData = async () => {
-  try {
-    const value = AsyncStorage.getItem('@storage_Key')
-    if(value !== null) {
-      return value;
-    } else {
-      return 'Dummy1';
+class StorageTutorial extends React.Component {
+  constructor (props) {
+    super(props);
+    this.state = {
+    };
+  }
+  async toggleState(isChecked: boolean) {
+    this.setState({
+      is_Happy: isChecked,
+    });
+    await AsyncStorage.setItem('@saved-data', String(isChecked));
+  }
+  
+  async componentDidMount() {
+    console.log('component init')
+    try {
+      const savedBool = await AsyncStorage.getItem('@saved-data');
+      console.log(savedBool);
+      if (savedBool == null) {
+        this.setState({
+          is_Happy: false,
+        });
+      } else {
+        this.setState({
+          is_Happy: savedBool == 'true' ? true : false,
+        });
+      }
+    } catch(e) {
+      console.error(e);
     }
-  } catch(e) {
-    return 'Dummy2';
+  }
+  render() {
+    return (
+      <View>
+        <BouncyCheckbox
+          onPress={() => {
+            console.log(!this.state.is_Happy);
+            this.toggleState(!this.state.is_Happy);
+          }}
+          isChecked={this.state.is_Happy}
+          disableBuiltInState={true}
+        />
+        {this.state.is_Happy ? 
+          <Text>
+            나는 행복합니다~
+          </Text> :
+          <Text>
+            나는 불행합니다~
+          </Text>
+        }
+      </View>
+    );
   }
 }
 
-const StorageTutorial = () => {
-  const [saved_text, set_text] = useState('on load...');
-  set_text(getData());
-  return (
-    <View style={{padding: 10}}>
-      <TextInput
-        style={{height: 40}}
-        placeholder="Type Something"
-        onChangeText={text => storeData(text)}
-        value={saved_text}
-      />
-    </View>
-  );
-}
-
-export { StorageTutorial };
 export default StorageTutorial;

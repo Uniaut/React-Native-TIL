@@ -2,13 +2,8 @@ import React, { Component } from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
 import { WebView } from "react-native-webview";
 import { ID as nmapID, Key as nmapKey } from './nmap.config.json';
-import CoreComponents from './helloworld.js'
-import { Thunder, Computer } from './react-fundamental.js'
-import AestheticTranslator from "./handling-text-input";
-import MyList from "./listview";
-import FlexDirectionBasics from "./style.js";
 import TelLink from "./telephone_linking.js";
-import StorageTutorial from "./storing";
+import StorageTutorial from "./storing.js";
 
 
 var base64 = require('base-64')

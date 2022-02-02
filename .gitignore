@@ -14,7 +14,7 @@ __generated__
 build/
 
 # Token, etc.
-config.json
+*.config.json
 
 
 # Local configuration file (sdk path, etc)
