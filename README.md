@@ -4,3 +4,8 @@
 
 # Tutorial
 서버 API 적용, GPS 수신 등의 기능 공부 예정
+## TODO
+- [ ] 네이버 지도 API 적용
+  - [x] static map 적용
+  - [ ] dynamic map 적용, nmap 사용에 애먹는 중
+- [ ] GeoLocation으로 GPS 사용하는 법 익히기
