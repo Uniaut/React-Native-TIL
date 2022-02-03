@@ -54,7 +54,6 @@ const App = () => {
     <View style={styles.container}>
       <View style={styles.storage_area}>
         <StorageTutorial />
-        <GeoData />
       </View>
       <View style={styles.geo_area}>
         <GeoData />
